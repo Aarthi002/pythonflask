@@ -1,12 +1,13 @@
 pipeline {
-  agent any
-  environment {
-    PROJECT_ID = 'tasko-task'
-    CLUSTER_NAME = 'k8s-cluster'
-    LOCATION = 'us-central1-c'
-    CREDENTIALS_ID = 'tasko-task'		
+    agent any
+	environment {
+		PROJECT_ID = 'tasko-task'
+                CLUSTER_NAME = 'k8s-cluster'
+                LOCATION = 'us-central1-c'
+                CREDENTIALS_ID = 'tasko-task'		
 	}
-  stages {
+	
+    stages {
     stage ('Code Pull') {
       steps{
         script{
@@ -14,25 +15,21 @@ pipeline {
         }
       }
     }
-    
-    
-    stage ('test: Unit-Test') {
+	 stage ('test: Unit-Test') {
       steps{
         sh 'sudo python3 -m unittest test.py -v'
         sh 'echo "Unittest Success"'
         sh 'pwd'
       }
     }
-    
-    stage ('test: Jmeter-test') {
+	    stage ('test: Jmeter-test') {
       steps{
         sh 'sudo /home/davidbala592/jmeter/apache-jmeter-5.4.1/bin/jmeter -n -t /home/davidbala592/jmeter/apache-jmeter-5.4.1/bin/google-demo.jmx -l /home/davidbala592/jmeter/apache-jmeter-5.4.1/bin/google-demo-result.jtl'
         sh 'echo "Perfomance Test Success"'
         perfReport '/home/davidbala592/jmeter/apache-jmeter-5.4.1/bin/google-demo-result.jtl'
       }
     }
-    
-    stage('SonarQube analysis') {
+	    stage('SonarQube analysis') {
       environment {
         scannerHome = tool 'scanner'
       }
@@ -55,8 +52,10 @@ pipeline {
         }
       }
     }
-    
-    stage('Build Docker Image') {
+	    
+	    
+	    
+	    stage('Build Docker Image') {
 		    steps {
 			    sh 'whoami'
 			    script {
@@ -64,19 +63,21 @@ pipeline {
 			    }
 		    }
 	    }
-    stage("Push Docker Image") {
+	    
+	    stage("Push Docker Image") {
 		    steps {
 			    script {
 				    echo "Push Docker Image"
 				    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-            				sh "docker login -u katara123 -p ${dockerhub}"
+            				sh "docker login -u ameintu -p ${dockerhub}"
 				    }
 				        myimage.push("${env.BUILD_ID}")
 				    
 			    }
 		    }
 	    }
-     stage('Deploy to K8s') {
+	    
+	    stage('Deploy to K8s') {
 		    steps{
 			    echo "Deployment started ..."
 			    sh 'ls -ltr'
@@ -90,5 +91,5 @@ pipeline {
 			    echo "Deployment Finished ..."
 		    }
 	    }
-  }
+    }
 }
