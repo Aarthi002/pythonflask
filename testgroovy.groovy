@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-		PROJECT_ID = 'tasko-task'
+    PROJECT_ID = 'tasko-task'
     CLUSTER_NAME = 'k8s-cluster'
     LOCATION = 'us-central1-c'
     CREDENTIALS_ID = 'tasko-task'		
@@ -68,8 +68,8 @@ pipeline {
 		    steps {
 			    script {
 				    echo "Push Docker Image"
-				    withCredentials([string(credentialsId: 'katara123', variable: 'katara123')]) {
-            				sh "docker login -u katara123 -p ${katara123}"
+				    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+            				sh "docker login -u katara123 -p ${dockerhub}"
 				    }
 				        myimage.push("${env.BUILD_ID}")
 				    
