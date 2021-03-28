@@ -28,3 +28,5 @@ EXPOSE 5000
 RUN pwd
 # RUN python3 /usr/src/app/app.py
 CMD ["python3", "/usr/src/app/app.py"]
+RUN mkdir /usr/local/tomcat/webapps/myapp
+COPY kubernetes/target/kubernetes-1.0-AMIT /usr/local/tomcat/webapps/kubernetes-1.0-AMIT
