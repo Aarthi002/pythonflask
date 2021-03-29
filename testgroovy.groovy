@@ -15,7 +15,7 @@ pipeline {
         }
       }
     }
-	 stage ('test: Unit-Test') {
+	 /*stage ('test: Unit-Test') {
       steps{
         sh 'sudo python3 -m unittest test.py -v'
         sh 'echo "Unittest Success"'
@@ -51,7 +51,7 @@ pipeline {
           '''
         }
       }
-    }
+    }*/
 	    
 	    
 	    
