@@ -51,7 +51,7 @@ pipeline {
           '''
         }
       }
-    }*/
+    }
 	    
 	    
 	    
@@ -62,7 +62,7 @@ pipeline {
 				    myimage = docker.build("katara123/devops:${env.BUILD_ID}")
 			    }
 		    }
-	    }
+	    }*/
 	    
 	    stage("Push Docker Image") {
 		    steps {
