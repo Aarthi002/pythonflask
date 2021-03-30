@@ -6,8 +6,14 @@ pipeline {
                 LOCATION = 'us-central1-c'
                 CREDENTIALS_ID = 'tasko-task'		
 	}
+	 stages {
+	    stage('Scm Checkout') {
+		    steps {
+			    checkout scm
+		    }
+	    }
 	
-    stages {
+   /* stages {
     stage ('Code Pull') {
       steps{
         script{
@@ -15,7 +21,7 @@ pipeline {
         }
       }
     }
-	 /*stage ('test: Unit-Test') {
+	 stage ('test: Unit-Test') {
       steps{
         sh 'sudo python3 -m unittest test.py -v'
         sh 'echo "Unittest Success"'
@@ -62,7 +68,7 @@ pipeline {
 				    myimage = docker.build("katara123/devops:${env.BUILD_ID}")
 			    }
 		    }
-	    }*/
+	    }
 	    
 	    stage("Push Docker Image") {
 		    steps {
@@ -75,7 +81,7 @@ pipeline {
 				    
 			    }
 		    }
-	    }
+	    }*/
 	    
 	    stage('Deploy to K8s') {
 		    steps{
