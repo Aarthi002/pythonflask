@@ -29,7 +29,7 @@ db_user = "baarath"
 db_password = "baarath"
 db_name = "certdets"
 db_connection_name = "tasko-task:asia-south1:mydbinsta"
-host='35.244.62.185'
+host='127.0.0.1'
 
 app = Flask(__name__)
 
@@ -439,4 +439,4 @@ def signout():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
+    app.run(host='127.0.0.1',debug=True)
