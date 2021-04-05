@@ -1,23 +1,82 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: myapp
- labels:
-  app: myapp
+  name: test-quiz-db
+  labels:
+    app: test-quiz-db
 spec:
- replicas: 1
- selector:
-  matchLabels:
-   app: myapp
- template:
-  metadata: 
-   labels:
-    app: myapp
-  spec:
-   containers:
-   - name: myapp
-     image: katara123/devops:tagversion
-     ports:
-     - containerPort: 5000
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-quiz-db
+  template:
+    metadata:
+      labels:
+        app: test-quiz-db
+    spec:
+      containers:
+      - image: gcr.io/tasko-task/harinathdockerid/v5flaskapp:latest
+        name: test-quiz-db
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        # ... other container configuration
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: database
+      - name: cloud-sql-proxy
+        # It is recommended to use the latest version of the Cloud SQL proxy
+        # Make sure to update on a regular schedule!
+        image: gcr.io/cloudsql-docker/gce-proxy:latest  
+        command:
+          - "/cloud_sql_proxy"
 
+          # If connecting from a VPC-native GKE cluster, you can use the
+          # following flag to have the proxy connect over private IP
+          # - "-ip_address_types=PRIVATE"
+
+          # Replace DB_PORT with the port the proxy should listen on
+          # Defaults: MySQL: 3306, Postgres: 5432, SQLServer: 1433
+          - "-instances=tasko-task:asia-south1:mydbinsta=tcp:3306"
+
+          # This flag specifies where the service account key can be found
+          - "-credential_file=/secrets/sa-key-secret/service_account.json"
+        securityContext:
+          # The default Cloud SQL proxy image runs as the
+          # "nonroot" user and group (uid: 65532) by default.
+          runAsNonRoot: true
+        volumeMounts:
+        - name: sa-secret-volume
+          mountPath: /secrets/sa-key-secret
+          readOnly: true
+      volumes:
+      - name: sa-secret-volume
+        secret:
+          secretName: sa-key-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-quiz-db
+spec:
+  type: LoadBalancer
+  selector:
+    app: test-quiz-db
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
